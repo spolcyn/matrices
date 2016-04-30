@@ -38,4 +38,22 @@ Matrix& MatrixOperations::add(Matrix &m, Matrix& n)
 	return *o;
 }
 
+Matrix& MatrixOperations::subtract(Matrix &m, Matrix& n)
+{
+	if(m.getDimensions() != n.getDimensions())
+		throw MatrixDimensionException;
+
+	Matrix* o = new Matrix(m.getDimensions());
+
+	for(int row = 1; row <= o->getDimensions().rows; row++)
+	{
+		for(int column = 1; column <= o->getDimensions().columns; column++)
+		{
+			o->editEntry(row, column, m.getEntry(row, column) - n.getEntry(row, column));
+		}
+	}
+
+	return *o;
+}
+
 #endif

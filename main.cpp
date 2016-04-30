@@ -26,5 +26,5 @@ int main(int argc, const char * argv[]) {
 
     cout << *m;
 
-    cout << MatrixOperations::add(*m, *n);
+    cout << MatrixOperations::subtract(*n, *m);
 }
