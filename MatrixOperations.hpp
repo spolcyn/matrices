@@ -11,18 +11,25 @@
 
 #include "Matrix.hpp"
 
-Matrix& add(Matrix &m, Matrix& n);
+class MatrixOperations 
+{
 
-Matrix& subtract(Matrix &m, Matrix& n);
+public:
 
-Matrix& multiply(Matrix& m, Matrix& n);
+	static Matrix& add(Matrix &m, Matrix& n);
 
-Matrix& ref(Matrix& m);
+	static Matrix& subtract(Matrix &m, Matrix& n);
 
-Matrix& rref(Matrix& m);
+	static Matrix& multiply(Matrix& m, Matrix& n);
 
-Matrix& invert(Matrix& m);
+	static Matrix& ref(Matrix& m);
 
-Matrix& findBasis(Matrix& m);
+	static Matrix& rref(Matrix& m);
+
+	static Matrix& invert(Matrix& m);
+
+	static Matrix& findBasis(Matrix& m);
+
+};
 
 #endif

@@ -37,6 +37,11 @@ struct Dimension {
         rows = d.rows;
         columns = d.columns;
     }
+
+    friend bool operator!=(const Dimension& d1, const Dimension& d2)
+    {
+        return (d1.rows != d2.rows) || (d1.columns != d2.columns);
+    }
 };
 
 /**
@@ -98,6 +103,12 @@ public:
     *@return Value of the entry at that coordinate
     */
     double getEntry(int row, int column) const;
+
+    /**
+    *Returns the dimensions of the patrix
+    *@return Dimensions of the matrix
+    */
+    Dimension& getDimensions() const;
     
     /**
     *Nicely outputs the matrix in text format

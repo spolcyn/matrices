@@ -8,6 +8,7 @@
 
 #include <iostream>
 #include "Matrix.hpp"
+#include "MatrixOperations.hpp"
 
 
 using namespace std;
@@ -16,8 +17,14 @@ int main(int argc, const char * argv[]) {
     
     Matrix* m = new Matrix(*new Dimension(5,5));
 
-    m->editEntry(1, 1, 5000000);
+    m->editEntry(1, 1, 50000);
     m->editEntry(5, 5, 10000);
 
+    Matrix* n = new Matrix(*new Dimension(5, 5));
+
+    n->editEntry(1, 1, 5);
+
     cout << *m;
+
+    cout << MatrixOperations::add(*m, *n);
 }

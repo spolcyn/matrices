@@ -8,6 +8,25 @@
 
 #include "Matrix.hpp"
 
+Matrix::Matrix(Dimension& d)
+{
+    dimensions = new Dimension(d);
+    entryMatrix = new double[d.rows * d.columns];
+    
+    //initialize to 0
+    for(int x = 0; x < d.rows * d.columns; x++)
+    {
+        entryMatrix[x] = 0.0;
+    }
+}
+
+Matrix::Matrix(Dimension& d, double& entries)
+{
+    dimensions = new Dimension(d);
+    
+    entryMatrix = &entries;
+}
+
 void Matrix::editEntry(Dimension d, double value)
 {
     editEntry(d.rows, d.columns, value);
@@ -28,23 +47,9 @@ double Matrix::getEntry(int row, int column) const
     return *(entryMatrix + (row - 1) * dimensions->rows + (column - 1));
 }
 
-Matrix::Matrix(Dimension& d)
+Dimension& Matrix::getDimensions() const
 {
-    dimensions = new Dimension(d);
-    entryMatrix = new double[d.rows * d.columns];
-    
-    //initialize to 0
-    for(int x = 0; x < d.rows * d.columns; x++)
-    {
-        entryMatrix[x] = 0.0;
-    }
-}
-
-Matrix::Matrix(Dimension& d, double& entries)
-{
-    dimensions = new Dimension(d);
-    
-    entryMatrix = &entries;
+    return *dimensions;
 }
 
 //pads the number with spaces to ensure proper output format
@@ -86,7 +91,7 @@ std::ostream& operator<<(std::ostream& os, const Matrix& m)
 
         for(int column = 1; column <= m.dimensions->columns; column++)
         {
-            os << std::fixed << m.getEntry(row, column) << padding(m.getEntry(row, column), width) << " | ";
+            os << /*std::fixed << */ m.getEntry(row, column) << padding(m.getEntry(row, column), width) << " | ";
         }
         
         os << std::endl;
