@@ -6,10 +6,13 @@
 //  Copyright © 2015 SPYN Enterprises. All rights reserved.
 //
 
+#define DEBUG
+
 #ifndef Matrix_hpp
 #define Matrix_hpp
 
 #include <iostream>
+#include <vector>
 
 /**
 * 2-D Coordinate Class with row / column
@@ -29,10 +32,10 @@ struct Dimension {
     }
     
     /**
-    *Constructor
+    *Copy Constructor
     *@param d Dimension object
     */
-    Dimension(Dimension &d)
+    Dimension(const Dimension &d)
     {
         rows = d.rows;
         columns = d.columns;
@@ -57,10 +60,22 @@ class Matrix {
     /**
     *The array storing the entries of the matrix
     */
-    double* entryMatrix;
+    std::vector<double> entryMatrix;
     
+    /**
+    *Validates the coordinate entered
+    */
+    void validate(int row, int column) const;
+
 public:
     
+    /**
+    *Constructor
+    *@param row Number of rows in the matrix
+    *@param column Number of columns in the matrix
+    */
+    Matrix(int row, int column);
+
     /**
     *Constructor
     *@param d Dimensions for the 0-initialized matrix
@@ -72,7 +87,7 @@ public:
     *@param d Dimensions for the matrix
     *@param entries Array with entries for the matrix of size r * c
     */
-    Matrix(Dimension& d, double& entries);
+    Matrix(Dimension& d, std::vector<double>& entries);
 
     /**
     *Edits the entry at {@code d}, replacing it with {@code value}

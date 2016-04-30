@@ -56,4 +56,32 @@ Matrix& MatrixOperations::subtract(Matrix &m, Matrix& n)
 	return *o;
 }
 
+Matrix& MatrixOperations::multiply(Matrix &m, Matrix &n)
+{
+	if(m.getDimensions().columns != n.getDimensions().rows)
+		throw MatrixDimensionException;
+
+	Matrix* o = new Matrix(*new Dimension(m.getDimensions().rows, n.getDimensions().columns));
+
+	double product = 0;
+
+	for(int row = 1; row <= m.getDimensions().rows; row++)
+	{
+		for(int column = 1; column <= n.getDimensions().columns; column++)
+		{
+			for(int row2 = 1; row2 <= n.getDimensions().rows; row2++)
+			{
+				product += m.getEntry(row, row2) * n.getEntry(row2, column);
+			}
+
+			o->editEntry(row, column, product);
+
+			product = 0;
+		}
+	}
+
+	return *o;
+}
+
+
 #endif

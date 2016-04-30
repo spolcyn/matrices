@@ -8,23 +8,43 @@
 
 #include "Matrix.hpp"
 
+class MatrixOutOfBoundsException: public std::exception
+{
+  virtual const char* what() const throw()
+  {
+    return "The requested coordinate is not within the matrix.\n";
+  }
+} MatrixOutOfBoundsException;
+
+Matrix::Matrix(int row, int column)
+{
+    dimensions = new Dimension(row, column);
+    entryMatrix = std::vector<double>(row * column);
+}
+
 Matrix::Matrix(Dimension& d)
 {
     dimensions = new Dimension(d);
-    entryMatrix = new double[d.rows * d.columns];
+    entryMatrix = std::vector<double>(d.rows * d.columns);
     
     //initialize to 0
     for(int x = 0; x < d.rows * d.columns; x++)
     {
-        entryMatrix[x] = 0.0;
+        entryMatrix[x] = 0;
     }
 }
 
-Matrix::Matrix(Dimension& d, double& entries)
+Matrix::Matrix(Dimension& d, std::vector<double>& entries)
 {
     dimensions = new Dimension(d);
     
-    entryMatrix = &entries;
+    entryMatrix = entries;
+}
+
+void Matrix::validate(int row, int column) const
+{
+    if(!(row - 1 >= 0 && row - 1 < dimensions->rows && column - 1 >= 0 && column - 1 < dimensions->columns))
+        throw MatrixOutOfBoundsException;
 }
 
 void Matrix::editEntry(Dimension d, double value)
@@ -34,7 +54,8 @@ void Matrix::editEntry(Dimension d, double value)
 
 void Matrix::editEntry(int row, int column, double value)
 {
-    *(entryMatrix + (row - 1) * dimensions->rows + (column - 1)) = value;
+    validate(row, column);
+    entryMatrix[(row - 1) * dimensions->rows + (column - 1)] = value;
 }
 
 double Matrix::getEntry(Dimension d) const
@@ -44,7 +65,8 @@ double Matrix::getEntry(Dimension d) const
 
 double Matrix::getEntry(int row, int column) const
 {
-    return *(entryMatrix + (row - 1) * dimensions->rows + (column - 1));
+    validate(row, column);
+    return entryMatrix[(row - 1) * dimensions->rows + (column - 1)];
 }
 
 Dimension& Matrix::getDimensions() const
@@ -91,7 +113,7 @@ std::ostream& operator<<(std::ostream& os, const Matrix& m)
 
         for(int column = 1; column <= m.dimensions->columns; column++)
         {
-            os << /*std::fixed << */ m.getEntry(row, column) << padding(m.getEntry(row, column), width) << " | ";
+            os << m.getEntry(row, column) << padding(m.getEntry(row, column), width) << " | ";
         }
         
         os << std::endl;
