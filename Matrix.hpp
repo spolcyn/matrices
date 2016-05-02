@@ -80,7 +80,7 @@ public:
     *Constructor
     *@param d Dimensions for the 0-initialized matrix
     */
-    Matrix(Dimension& d);
+    Matrix(Dimension& d) : Matrix(d.columns, d.rows) {}
     
     /**
     *Constructor

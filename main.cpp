@@ -15,22 +15,30 @@ using namespace std;
 
 int main(int argc, const char * argv[]) {    
     
-    Matrix* m = new Matrix(5, 5);
+    Matrix* m = new Matrix(2, 2);
 
-    m->editEntry(1, 1, 50000);
-    m->editEntry(2, 2, 20000);
-    m->editEntry(5, 5, 10000);
-    m->editEntry(3, 4, 40.0);
+    m->editEntry(1, 1, 5);
+    m->editEntry(1, 2, 3);
+    m->editEntry(2, 1, 4);
+    m->editEntry(2, 2, 6);
 
     Matrix* n = new Matrix(5, 3);
 
     n->editEntry(1, 1, 10);
-    n->editEntry(2, 2, 20);
-    n->editEntry(3, 3, 30);
+    n->editEntry(2, 2, 200);
+    n->editEntry(3, 3, 3);
     n->editEntry(4, 3, 43.0);
 
     cout << "M: \n\n" << *m << "\n\n";
     cout << "N: \n\n" << *n << "\n\n";
 
-    cout << MatrixOperations::multiply(*m, *n);
+    cout << MatrixOperations::determinant(*m) << std::endl;
+
+    try{
+   		cout << MatrixOperations::determinant(*n) << std::endl;
+	}
+	catch(std::exception& e)
+	{
+		std::cout << e.what();
+	}
 }

@@ -20,15 +20,9 @@ Matrix::Matrix(int row, int column)
 {
     dimensions = new Dimension(row, column);
     entryMatrix = std::vector<double>(row * column);
-}
 
-Matrix::Matrix(Dimension& d)
-{
-    dimensions = new Dimension(d);
-    entryMatrix = std::vector<double>(d.rows * d.columns);
-    
     //initialize to 0
-    for(int x = 0; x < d.rows * d.columns; x++)
+    for(int x = 0; x < row * column; x++)
     {
         entryMatrix[x] = 0;
     }
@@ -113,6 +107,10 @@ std::ostream& operator<<(std::ostream& os, const Matrix& m)
 
         for(int column = 1; column <= m.dimensions->columns; column++)
         {
+            #ifdef DEBUG
+            os << std::fixed;
+            os.precision(3);
+            #endif
             os << m.getEntry(row, column) << padding(m.getEntry(row, column), width) << " | ";
         }
         
