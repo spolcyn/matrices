@@ -48,8 +48,15 @@ void Matrix::editEntry(Dimension d, double value)
 
 void Matrix::editEntry(int row, int column, double value)
 {
-    validate(row, column);
-    entryMatrix[(row - 1) * dimensions->rows + (column - 1)] = value;
+    try
+    {
+        validate(row, column);
+        entryMatrix[(row - 1) * dimensions->rows + (column - 1)] = value;
+    }   
+    catch(std::exception& e)
+    {
+        std::cout << e.what() << " (" << row << ", " << column << ")\n";
+    }
 }
 
 double Matrix::getEntry(Dimension d) const
@@ -107,10 +114,8 @@ std::ostream& operator<<(std::ostream& os, const Matrix& m)
 
         for(int column = 1; column <= m.dimensions->columns; column++)
         {
-            #ifdef DEBUG
             os << std::fixed;
             os.precision(3);
-            #endif
             os << m.getEntry(row, column) << padding(m.getEntry(row, column), width) << " | ";
         }
         

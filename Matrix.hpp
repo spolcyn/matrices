@@ -6,8 +6,6 @@
 //  Copyright © 2015 SPYN Enterprises. All rights reserved.
 //
 
-#define DEBUG
-
 #ifndef Matrix_hpp
 #define Matrix_hpp
 

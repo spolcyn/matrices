@@ -17,28 +17,20 @@ int main(int argc, const char * argv[]) {
     
     Matrix* m = new Matrix(2, 2);
 
-    m->editEntry(1, 1, 5);
-    m->editEntry(1, 2, 3);
-    m->editEntry(2, 1, 4);
-    m->editEntry(2, 2, 6);
+    m->editEntry(1, 1, 2);
+    m->editEntry(1, 2, 7);
+    m->editEntry(2, 1, 9);
+    m->editEntry(2, 2, 16);
 
-    Matrix* n = new Matrix(5, 3);
+    // Matrix* n = new Matrix(5, 3);
 
-    n->editEntry(1, 1, 10);
-    n->editEntry(2, 2, 200);
-    n->editEntry(3, 3, 3);
-    n->editEntry(4, 3, 43.0);
+    // n->editEntry(1, 1, 10);
+    // n->editEntry(2, 2, 200);
+    // n->editEntry(3, 3, 3);
+    // n->editEntry(4, 3, 43.0);
 
-    cout << "M: \n\n" << *m << "\n\n";
-    cout << "N: \n\n" << *n << "\n\n";
+    //cout << "M: \n\n" << *m << "\n\n";
+    //cout << "N: \n\n" << *n << "\n\n";
 
-    cout << MatrixOperations::determinant(*m) << std::endl;
-
-    try{
-   		cout << MatrixOperations::determinant(*n) << std::endl;
-	}
-	catch(std::exception& e)
-	{
-		std::cout << e.what();
-	}
+	cout << MatrixOperations::multiply(MatrixOperations::invert(*m), *m);
 }

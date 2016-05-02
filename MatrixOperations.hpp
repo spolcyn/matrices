@@ -22,9 +22,13 @@ public:
 
 	static Matrix& multiply(Matrix& m, Matrix& n);
 
-	static Matrix& subsection(Matrx& m, Dimension& entryToExclude);
+	static Matrix& multiply(Matrix& m, double scalar);
+
+	static Matrix& subsection(Matrix& m, Dimension& entryToExclude);
 
 	static double determinant(Matrix& m);
+
+	static Matrix& transpose(Matrix& m);
 
 	static Matrix& ref(Matrix& m);
 
