@@ -22,15 +22,16 @@ int main(int argc, const char * argv[]) {
     m->editEntry(2, 1, 9);
     m->editEntry(2, 2, 16);
 
-    // Matrix* n = new Matrix(5, 3);
+    Matrix* n = new Matrix(5, 3);
 
-    // n->editEntry(1, 1, 10);
-    // n->editEntry(2, 2, 200);
-    // n->editEntry(3, 3, 3);
-    // n->editEntry(4, 3, 43.0);
+    cout << *m;
 
-    //cout << "M: \n\n" << *m << "\n\n";
-    //cout << "N: \n\n" << *n << "\n\n";
+    n->editEntry(1, 1, 10);
+    n->editEntry(2, 2, 200);
+    n->editEntry(3, 3, 3);
+    n->editEntry(4, 3, 43.0);
 
-	cout << MatrixOperations::multiply(MatrixOperations::invert(*m), *m);
+    cout << Matrix(*m);
+
+    cout << MatrixOperations::rref(*m);
 }

@@ -58,7 +58,7 @@ class Matrix {
     /**
     *The array storing the entries of the matrix
     */
-    std::vector<double> entryMatrix;
+    double* entryMatrix;
     
     /**
     *Validates the coordinate entered
@@ -85,7 +85,13 @@ public:
     *@param d Dimensions for the matrix
     *@param entries Array with entries for the matrix of size r * c
     */
-    Matrix(Dimension& d, std::vector<double>& entries);
+    Matrix(Dimension& d, double* entries);
+
+    /**
+    *Copy constructor
+    *@param m Matrix to copy
+    */
+    Matrix(const Matrix& m);
 
     /**
     *Edits the entry at {@code d}, replacing it with {@code value}
@@ -110,12 +116,28 @@ public:
     double getEntry(Dimension d) const;
 
     /**
-    *Returns the value at the given coordinate
+    *Returns the value at the given coordinate, 1-indexed
     *@param row Row of the entry
     *@param column Column of the entry
     *@return Value of the entry at that coordinate
     */
     double getEntry(int row, int column) const;
+
+    /**
+    *Swaps the entry in (row, column) with (row, column)
+    *@param i1 Row entry 1
+    *@param j1 Column entry 1
+    *@param i2 Row entry 2
+    *@param j2 Column entry 2
+    */
+    void swapEntry(int i1, int j1, int i2, int j2);
+
+    /**
+    *Returns a row of a matrix as a row vector
+    *@param row The row to retrieve
+    *@return Specified row of the matrix
+    */
+    Matrix& getRow(int row) const;
 
     /**
     *Returns the dimensions of the patrix

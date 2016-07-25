@@ -1,19 +1,19 @@
 CC=g++
 CFLAGS=-std=c++11 -g
+SRCDIR := src
+BUILDDIR := build 
+TARGET := bin/matrices
+
+_OBJ = main.o Matrix.o MatrixOperations.o
+OBJ = $(patsubst %, $(BUILDDIR)/%, $(_OBJ))
 
 all: matrices
 
-matrices: main.o Matrix.o MatrixOperations.o
-	$(CC) $(CFLAGS) main.o Matrix.o MatrixOperations.o -o matrices
+matrices: $(OBJ) 
+	$(CC) -o $@ $^ $(CFLAGS)
 
-main.o: main.cpp Matrix.o
-	$(CC) $(CFLAGS) -c main.cpp
-
-Matrix.o: Matrix.cpp Matrix.hpp
-	$(CC) $(CFLAGS) -c Matrix.cpp
-
-MatrixOperations.o: Matrix.o MatrixOperations.hpp MatrixOperations.cpp
-	$(CC) $(CFLAGS) -c MatrixOperations.cpp
+$(BUILDDIR)/%.o: $(SRCDIR)/%.cpp
+	$(CC) -c -o $@ $< $(CFGLAGS)
 
 clean:
-	rm *.o matrices
+	rm -f $(BUILDDIR)/*.o $(TARGET)

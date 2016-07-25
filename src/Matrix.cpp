@@ -7,38 +7,71 @@
 //
 
 #include "Matrix.hpp"
+#include <string>
 
 class MatrixOutOfBoundsException: public std::exception
 {
+    int row, column;
+
+    public:
+
+    MatrixOutOfBoundsException(int r, int c) 
+    {
+        row = r;
+        column = c;
+    }
+
+
   virtual const char* what() const throw()
   {
-    return "The requested coordinate is not within the matrix.\n";
+    std::string returnStr = "The requested coordinate ("  + std::to_string(row) + ", " + std::to_string(column) + ") is not within the matrix.";
+    return returnStr.c_str();
   }
-} MatrixOutOfBoundsException;
+};
 
 Matrix::Matrix(int row, int column)
 {
     dimensions = new Dimension(row, column);
-    entryMatrix = std::vector<double>(row * column);
+    entryMatrix = new double[row * column];
 
     //initialize to 0
     for(int x = 0; x < row * column; x++)
     {
-        entryMatrix[x] = 0;
+        *(entryMatrix + x) = 0;
     }
 }
 
-Matrix::Matrix(Dimension& d, std::vector<double>& entries)
+Matrix::Matrix(Dimension& d, double* entries)
 {
     dimensions = new Dimension(d);
     
     entryMatrix = entries;
 }
 
+Matrix::Matrix(const Matrix& m)
+{
+    dimensions = new Dimension(m.getDimensions());
+    entryMatrix = new double[dimensions->rows * dimensions->columns];
+
+    //initialize to 0
+    for(int x = 0; x < dimensions->rows * dimensions->columns; x++)
+    {
+        *(entryMatrix + x) = 0;
+    }
+
+    for(int row = 1; row <= dimensions->rows; row++)
+    {
+        for(int column = 1; column <= dimensions->columns; column++)
+        {
+            *(entryMatrix + ((row - 1) * dimensions->rows + (column - 1))) = m.getEntry(row, column);
+        }
+    }
+}
+
 void Matrix::validate(int row, int column) const
 {
     if(!(row - 1 >= 0 && row - 1 < dimensions->rows && column - 1 >= 0 && column - 1 < dimensions->columns))
-        throw MatrixOutOfBoundsException;
+        throw MatrixOutOfBoundsException(row, column);
 }
 
 void Matrix::editEntry(Dimension d, double value)
@@ -51,7 +84,7 @@ void Matrix::editEntry(int row, int column, double value)
     try
     {
         validate(row, column);
-        entryMatrix[(row - 1) * dimensions->rows + (column - 1)] = value;
+        *(entryMatrix + ((row - 1) * dimensions->rows + (column - 1))) = value;
     }   
     catch(std::exception& e)
     {
@@ -66,9 +99,29 @@ double Matrix::getEntry(Dimension d) const
 
 double Matrix::getEntry(int row, int column) const
 {
-    validate(row, column);
-    return entryMatrix[(row - 1) * dimensions->rows + (column - 1)];
+        validate(row, column);
+        return *(entryMatrix + ((row - 1) * dimensions->rows + (column - 1)));
 }
+
+void Matrix::swapEntry(int i1, int j1, int i2, int j2)
+{
+    double temp = getEntry(i1, j1);
+    editEntry(i1, j1, getEntry(i2, j2));
+    editEntry(i2, j2, temp);
+}
+
+Matrix& Matrix::getRow(int row) const
+{
+    Matrix* rowVector = new Matrix(1, dimensions->columns);
+
+    for(int column = 1; column <= dimensions->columns; column++)
+    {
+        rowVector->editEntry(1, column, getEntry(row, column));
+    }
+
+    return *rowVector;
+}
+
 
 Dimension& Matrix::getDimensions() const
 {

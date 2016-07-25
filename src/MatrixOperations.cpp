@@ -12,12 +12,14 @@
 #include "MatrixOperations.hpp"
 #include <exception>
 
+#define DEBUG_RREF
+
 
 class MatrixDimensionException: public std::exception
 {
 	virtual const char* what() const throw()
 	{
-    	return "The matrixes do not have compatible dimensions.\n";
+	    	return "The matrixes do not have compatible dimensions.\n";
 	}
 } MatrixDimensionException;
 
@@ -37,6 +39,14 @@ class MatrixNotInvertibleException: public std::exception
 		return "The matrix is not invertible.\n";
 	}
 } MatrixNotInvertibleException;
+
+class NotVectorException: public std::exception
+{
+	virtual const char* what() const throw()
+	{
+		return "The provided matrix is not a vector.\n";
+	}
+} NotVectorException;
 
 Matrix& MatrixOperations::add(Matrix &m, Matrix& n)
 {
@@ -72,6 +82,28 @@ Matrix& MatrixOperations::subtract(Matrix &m, Matrix& n)
 	}
 
 	return *o;
+}
+
+void MatrixOperations::subtract(Matrix &m, int mRow, Matrix &n)
+{
+	if(n.getDimensions().rows != 1 && n.getDimensions().columns != 1)
+		throw NotVectorException;
+
+
+	if(n.getDimensions().rows == 1)
+	{
+		for(int column = 1; column <= n.getDimensions().columns; column++)
+		{
+			m.editEntry(mRow, column, m.getEntry(mRow, column) - n.getEntry(1, column));
+		}
+	}
+	else
+	{
+		for(int row = 1; row <= n.getDimensions().rows; row++)
+		{
+			m.editEntry(mRow, row, m.getEntry(mRow, row) - n.getEntry(1, row));
+		}
+	}
 }
 
 Matrix& MatrixOperations::multiply(Matrix &m, Matrix &n)
@@ -153,6 +185,22 @@ Matrix& MatrixOperations::subsection(Matrix& m, Dimension& entryToExclude)
 	return *subsection;
 }
 
+void MatrixOperations::swapRow(Matrix &m, int from, int to)
+{
+	for(int column = 1; column <= m.getDimensions().columns; column++)
+	{
+		m.swapEntry(from, column, to, column);
+	}
+}
+
+void MatrixOperations::swapColumn(Matrix &m, int from, int to)
+{
+	for(int row = 1; row <= m.getDimensions().rows; row++)
+	{
+		m.swapEntry(row, from, row, to);
+	}
+}
+
 double MatrixOperations::determinant(Matrix &m)
 {
 	if(m.getDimensions().rows != m.getDimensions().columns)
@@ -215,27 +263,65 @@ Matrix& MatrixOperations::invert(Matrix &m)
 
 	//create adjoint
 	Matrix* adjoint = &MatrixOperations::transpose(*cofactor);
-	#ifndef DEBUG_INVERSE
-	delete cofactor;
-	#endif
 	#ifdef DEBUG_INVERSE
 	std::cout << "Original: \n" << m << std::endl;
 	std::cout << "Cofactor: \n" << *cofactor << std::endl;
 	std::cout << "Adjoint: \n" << *adjoint << std::endl;
+	#else
+	delete cofactor;
 	#endif
+
 
 	//multiply by one over the determinant
 	Matrix* inverse = &MatrixOperations::multiply(*adjoint, 1.0 / MatrixOperations::determinant(m));
-	#ifndef DEBUG_INVERSE
-	delete adjoint;
-	#endif
 	#ifdef DEBUG_INVERSE
 	std::cout << "Inverse: \n" << *inverse << std::endl;
+	#else
+	delete adjoint;
 	#endif
 
 	return *inverse;
 
 }
+
+// Matrix& MatrixOperations::ref(Matrix& m)
+
+Matrix& MatrixOperations::rref(const Matrix& m)
+{
+	Matrix* returnM = new Matrix(m);
+
+	#ifdef DEBUG_RREF
+	std::cout << "returnM: " << returnM << std::endl;
+	std::cout << "*returnM: \n" << *returnM;
+	#endif
+
+	//https://www.csun.edu/~panferov/math262/262_rref.pdf
+	int i = 1, j = 1;
+
+	while(i <= m.getDimensions().rows && j <= m.getDimensions().columns)
+	{
+		//Step 1
+		while(m.getEntry(i, j) == 0)
+		{
+			//find a row that does not start with 0
+			for(row = i; row <= m.getDimensions().rows; row++)
+			{
+				if(m.getEntry(row, j) = 0)
+					break;	
+			}
+
+			
+		}	
+
+		//Step 2
+	}
+
+	return *returnM;
+}        
+	
+
+// Matrix& MatrixOperations::findBasis(Matrix& m)
+
 
 
 #endif
