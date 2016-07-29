@@ -12,7 +12,7 @@
 #include "MatrixOperations.hpp"
 #include <exception>
 
-#define DEBUG_RREF
+//#define DEBUG_RREF
 
 
 class MatrixDimensionException: public std::exception
@@ -48,7 +48,7 @@ class NotVectorException: public std::exception
 	}
 } NotVectorException;
 
-Matrix& MatrixOperations::add(Matrix &m, Matrix& n)
+Matrix& MatrixOperations::add(const Matrix &m, const Matrix& n)
 {
 	if(m.getDimensions() != n.getDimensions())
 		throw MatrixDimensionException;
@@ -66,7 +66,7 @@ Matrix& MatrixOperations::add(Matrix &m, Matrix& n)
 	return *o;
 }
 
-Matrix& MatrixOperations::subtract(Matrix &m, Matrix& n)
+Matrix& MatrixOperations::subtract(const Matrix &m, const Matrix& n)
 {
 	if(m.getDimensions() != n.getDimensions())
 		throw MatrixDimensionException;
@@ -84,7 +84,7 @@ Matrix& MatrixOperations::subtract(Matrix &m, Matrix& n)
 	return *o;
 }
 
-void MatrixOperations::subtract(Matrix &m, int mRow, Matrix &n)
+void MatrixOperations::subtract(Matrix &m, int mRow, const Matrix &n)
 {
 	if(n.getDimensions().rows != 1 && n.getDimensions().columns != 1)
 		throw NotVectorException;
@@ -106,7 +106,7 @@ void MatrixOperations::subtract(Matrix &m, int mRow, Matrix &n)
 	}
 }
 
-Matrix& MatrixOperations::multiply(Matrix &m, Matrix &n)
+Matrix& MatrixOperations::multiply(const Matrix &m, const Matrix &n)
 {
 	if(m.getDimensions().columns != n.getDimensions().rows)
 		throw MatrixDimensionException;
@@ -133,7 +133,7 @@ Matrix& MatrixOperations::multiply(Matrix &m, Matrix &n)
 	return *o;
 }
 
-Matrix& MatrixOperations::multiply(Matrix &m, double scalar)
+Matrix& MatrixOperations::multiply(const Matrix &m, double scalar)
 {
 	Matrix* o = new Matrix(m.getDimensions());
 
@@ -149,10 +149,10 @@ Matrix& MatrixOperations::multiply(Matrix &m, double scalar)
 }
 
 
-Matrix& MatrixOperations::subsection(Matrix& m, Dimension& entryToExclude)
+Matrix& MatrixOperations::subsection(const Matrix& m, Dimension& entryToExclude)
 {
 	if(m.getDimensions().rows == 1 && m.getDimensions().columns == 1)
-		return m;
+		return *(new Matrix(m));
 
 	Matrix* subsection = new Matrix(m.getDimensions().rows - 1, m.getDimensions().columns - 1);
 
@@ -201,7 +201,7 @@ void MatrixOperations::swapColumn(Matrix &m, int from, int to)
 	}
 }
 
-double MatrixOperations::determinant(Matrix &m)
+double MatrixOperations::determinant(const Matrix &m)
 {
 	if(m.getDimensions().rows != m.getDimensions().columns)
 		throw NonSquareMatrixException;
@@ -229,7 +229,7 @@ double MatrixOperations::determinant(Matrix &m)
 	return -0;
 }
 
-Matrix& MatrixOperations::transpose(Matrix& m)
+Matrix& MatrixOperations::transpose(const Matrix& m)
 {
 	Matrix* transpose = new Matrix(m.getDimensions());
 
@@ -245,7 +245,7 @@ Matrix& MatrixOperations::transpose(Matrix& m)
 }
 
 
-Matrix& MatrixOperations::invert(Matrix &m)
+Matrix& MatrixOperations::invert(const Matrix &m)
 {
 	if(MatrixOperations::determinant(m) == 0)
 		throw MatrixNotInvertibleException;
@@ -298,29 +298,70 @@ Matrix& MatrixOperations::rref(const Matrix& m)
 	//https://www.csun.edu/~panferov/math262/262_rref.pdf
 	int i = 1, j = 1;
 
-	while(i <= m.getDimensions().rows && j <= m.getDimensions().columns)
+	while(i <= returnM->getDimensions().rows && j <= returnM->getDimensions().columns)
 	{
-		//Step 1
-		while(m.getEntry(i, j) == 0)
+		//Step 1 - Guarantee that a_ij != 0
+		while(returnM->getEntry(i, j) == 0)
 		{
-			//find a row that does not start with 0
-			for(row = i; row <= m.getDimensions().rows; row++)
-			{
-				if(m.getEntry(row, j) = 0)
-					break;	
-			}
+			int row = 1;
 
+			//find a row that does not start with 0
+			while(returnM->getEntry(row, j) != 0)
+			{
+				if(i > returnM->getDimensions().rows) //if on the last row, move to top of next column
+				{
+					j++;
+					row = 0;
+				}
+				else if(returnM->getEntry(row, j) != 0) //if a legit entry is found
+				{
+					i = row;
+					break;
+				}
+				else if(i > returnM->getDimensions().rows && j > returnM->getDimensions().columns) //if off the edge of the matrix
+					break;
+				row++; //move down the column
+			}
 			
+			//it's 0's the whole way down, so return the original array - technically in RREF
+			if(i > returnM->getDimensions().rows && j > returnM->getDimensions().columns)
+				return *returnM;	
+
+			MatrixOperations::swapRow(*returnM, i, row);
 		}	
 
-		//Step 2
+		//Step 2  - make the pivot entry = 1
+		double aijValue = m.getEntry(i, j);
+		aijValue = 1.0 / aijValue;
+		MatrixOperations::multiply(*returnM, 1.0 / aijValue);
+
+		//Step 3 - eliminate all other non-zero entries in column j
+		for(int row = 1; row <= returnM->getDimensions().rows; row++)
+		{
+			if(row == i)
+			{
+				//do nothing and wait for increment
+			}
+			else
+			{
+				double leadingValue = returnM->getEntry(row, j); //find leading value to bring to 0
+				Matrix toSubtract = returnM->getRow(i); //get row i to subtract from next row
+				toSubtract = MatrixOperations::multiply(toSubtract, leadingValue); //multiply to enable nulling of leading value
+				MatrixOperations::subtract(*returnM, row, toSubtract); //subtract scalar multiple
+			}	
+		}
+
+		//Step 4 - increment pivot element
+		i++;
+		j++;
 	}
+
 
 	return *returnM;
 }        
 	
 
-// Matrix& MatrixOperations::findBasis(Matrix& m)
+// Matrix& MatrixOperations::findBasis(const Matrix& m)
 
 
 

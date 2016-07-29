@@ -9,6 +9,8 @@
 #include "Matrix.hpp"
 #include <string>
 
+//#define DEBUG
+
 class MatrixOutOfBoundsException: public std::exception
 {
     int row, column;
@@ -70,7 +72,14 @@ Matrix::Matrix(const Matrix& m)
 
 void Matrix::validate(int row, int column) const
 {
-    if(!(row - 1 >= 0 && row - 1 < dimensions->rows && column - 1 >= 0 && column - 1 < dimensions->columns))
+	#ifdef DEBUG
+	std::cout << "row: " << row << std::endl;
+	std::cout << "column: " << column << std::endl;
+	std::cout << "dimensions->rows: " << dimensions->rows << std::endl;
+	std::cout << "dimensions->columns: " << dimensions->columns << std::endl;
+	#endif
+
+    if(!(row > 0 && row <= dimensions->rows && column > 0 && column <= dimensions->columns))
         throw MatrixOutOfBoundsException(row, column);
 }
 
@@ -81,15 +90,8 @@ void Matrix::editEntry(Dimension d, double value)
 
 void Matrix::editEntry(int row, int column, double value)
 {
-    try
-    {
         validate(row, column);
         *(entryMatrix + ((row - 1) * dimensions->rows + (column - 1))) = value;
-    }   
-    catch(std::exception& e)
-    {
-        std::cout << e.what() << " (" << row << ", " << column << ")\n";
-    }
 }
 
 double Matrix::getEntry(Dimension d) const

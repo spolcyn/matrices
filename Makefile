@@ -1,19 +1,29 @@
 CC=g++
 CFLAGS=-std=c++11 -g
-SRCDIR := src
-BUILDDIR := build 
-TARGET := bin/matrices
+SRCDIR:=src
+BUILDDIR:=build
+TARGET:=bin/matrices
 
-_OBJ = main.o Matrix.o MatrixOperations.o
-OBJ = $(patsubst %, $(BUILDDIR)/%, $(_OBJ))
+#CPP_FILES := $(wildcard $(SRCDIR)/*.cpp)
+#OBJ_FILES := $(patsubst src/%.cpp,build/%.o,$(CPP_FILES))
 
-all: matrices
+#$(warning $(CPP_FILES))
+#$(warning $(OBJ_FILES))
+#$(warning $(BUILDDIR)/Matrix.o)
 
-matrices: $(OBJ) 
-	$(CC) -o $@ $^ $(CFLAGS)
+all: $(TARGET)
 
-$(BUILDDIR)/%.o: $(SRCDIR)/%.cpp
-	$(CC) -c -o $@ $< $(CFGLAGS)
+$(TARGET): $(BUILDDIR)/main.o $(BUILDDIR)/Matrix.o $(BUILDDIR)/MatrixOperations.o 
+	$(CC) $(CFLAGS) -o $@ $^ 
+
+$(BUILDDIR)/main.o: $(SRCDIR)/main.cpp 
+	$(CC) $(CFLAGS) -c -o $@ $^ 
+
+$(BUILDDIR)/Matrix.o: $(SRCDIR)/Matrix.cpp
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+$(BUILDDIR)/MatrixOperations.o: $(SRCDIR)/MatrixOperations.cpp
+	$(CC) $(CFLAGS) -c -o $@ $<
 
 clean:
 	rm -f $(BUILDDIR)/*.o $(TARGET)

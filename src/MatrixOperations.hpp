@@ -16,33 +16,33 @@ class MatrixOperations
 
 public:
 
-	static Matrix& add(Matrix &m, Matrix& n);
+	static Matrix& add(const Matrix &m, const Matrix& n);
 
-	static Matrix& subtract(Matrix &m, Matrix& n);
+	static Matrix& subtract(const Matrix &m, const Matrix& n);
 
-	static void subtract(Matrix &m, int mRow, Matrix &n);
+	static void subtract(Matrix &subtractFrom, int mRow, const Matrix &toSubtract);
 
-	static Matrix& multiply(Matrix& m, Matrix& n);
+	static Matrix& multiply(const Matrix& m, const Matrix& n);
 
-	static Matrix& multiply(Matrix& m, double scalar);
+	static Matrix& multiply(const Matrix& m, double scalar);
 
-	static Matrix& subsection(Matrix& m, Dimension& entryToExclude);
+	static Matrix& subsection(const Matrix& m, Dimension& entryToExclude);
 
 	static void swapRow(Matrix& m, int from, int to);
 
 	static void swapColumn(Matrix& m, int from, int to);
 
-	static double determinant(Matrix& m);
+	static double determinant(const Matrix& m);
 
-	static Matrix& transpose(Matrix& m);
+	static Matrix& transpose(const Matrix& m);
 
-	static Matrix& ref(Matrix& m);
+	static Matrix& ref(const Matrix& m);
 
 	static Matrix& rref(const Matrix& m);
 
-	static Matrix& invert(Matrix& m);
+	static Matrix& invert(const Matrix& m);
 
-	static Matrix& findBasis(Matrix& m);
+	static Matrix& findBasis(const Matrix& m);
 
 };
 

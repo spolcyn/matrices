@@ -22,16 +22,6 @@ int main(int argc, const char * argv[]) {
     m->editEntry(2, 1, 9);
     m->editEntry(2, 2, 16);
 
-    Matrix* n = new Matrix(5, 3);
+    std::cout << (MatrixOperations::rref(*m));
 
-    cout << *m;
-
-    n->editEntry(1, 1, 10);
-    n->editEntry(2, 2, 200);
-    n->editEntry(3, 3, 3);
-    n->editEntry(4, 3, 43.0);
-
-    cout << Matrix(*m);
-
-    cout << MatrixOperations::rref(*m);
 }
