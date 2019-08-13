@@ -24,7 +24,9 @@ public:
 
 	static Matrix& multiply(const Matrix& m, const Matrix& n);
 
-	static Matrix& multiply(const Matrix& m, double scalar);
+	static void multiply(Matrix& m, double scalar);
+
+    static void multiplyRow(Matrix& m, double scalar, int row);
 
 	static Matrix& subsection(const Matrix& m, Dimension& entryToExclude);
 
@@ -38,6 +40,7 @@ public:
 
 	static Matrix& ref(const Matrix& m);
 
+    /* Returns new matrix that is the RREF form of m  */
 	static Matrix& rref(const Matrix& m);
 
 	static Matrix& invert(const Matrix& m);

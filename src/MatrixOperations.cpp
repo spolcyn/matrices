@@ -133,21 +133,18 @@ Matrix& MatrixOperations::multiply(const Matrix &m, const Matrix &n)
 	return *o;
 }
 
-Matrix& MatrixOperations::multiply(const Matrix &m, double scalar)
+void MatrixOperations::multiply(Matrix &m, double scalar)
 {
-	Matrix* o = new Matrix(m.getDimensions());
-
 	for(int row = 1; row <= m.getDimensions().rows; row++)
-	{
 		for(int column = 1; column <= m.getDimensions().columns; column++)
-		{
-			o->editEntry(row, column, m.getEntry(row, column) * scalar);
-		}
-	}
-
-	return *o;
+			m.editEntry(row, column, m.getEntry(row, column) * scalar);
 }
 
+void multiplyRow(Matrix& m, double scalar, int row)
+{
+    for(int column = 1; column <= m.getDimensions().columns; column++)
+        m.editEntry(row, column, m.getEntry(row, column) * scalar);
+}
 
 Matrix& MatrixOperations::subsection(const Matrix& m, Dimension& entryToExclude)
 {
@@ -251,36 +248,35 @@ Matrix& MatrixOperations::invert(const Matrix &m)
 		throw MatrixNotInvertibleException;
 
 	//create minor matrix & cofactor at same time
-	Matrix* cofactor = new Matrix(m.getDimensions());
+	Matrix* inverted = new Matrix(m.getDimensions());
 
 	for(int row = 1; row <= m.getDimensions().rows; row++)
 	{
 		for(int column = 1; column <= m.getDimensions().columns; column++)
 		{
-			cofactor->editEntry(row, column, (-2 * ((row + column) % 2) + 1) * MatrixOperations::determinant(MatrixOperations::subsection(m, *new Dimension(row, column))));
+			inverted->editEntry(row, column, (-2 * ((row + column) % 2) + 1) * MatrixOperations::determinant(MatrixOperations::subsection(m, *new Dimension(row, column))));
 		}
 	}
 
 	//create adjoint
-	Matrix* adjoint = &MatrixOperations::transpose(*cofactor);
+	Matrix* adjoint = &MatrixOperations::transpose(*inverted);
 	#ifdef DEBUG_INVERSE
 	std::cout << "Original: \n" << m << std::endl;
 	std::cout << "Cofactor: \n" << *cofactor << std::endl;
 	std::cout << "Adjoint: \n" << *adjoint << std::endl;
 	#else
-	delete cofactor;
+	delete inverted;
 	#endif
 
 
 	//multiply by one over the determinant
-	Matrix* inverse = &MatrixOperations::multiply(*adjoint, 1.0 / MatrixOperations::determinant(m));
+	MatrixOperations::multiply(*adjoint, 1.0 / MatrixOperations::determinant(m));
 	#ifdef DEBUG_INVERSE
-	std::cout << "Inverse: \n" << *inverse << std::endl;
+	std::cout << "Inverse: \n" << *adjoint << std::endl;
 	#else
-	delete adjoint;
 	#endif
 
-	return *inverse;
+	return *adjoint;
 
 }
 
@@ -296,44 +292,31 @@ Matrix& MatrixOperations::rref(const Matrix& m)
 	#endif
 
 	//https://www.csun.edu/~panferov/math262/262_rref.pdf
-	int i = 1, j = 1;
+	int i = 1, j = 1, row;
+    int maxRows = returnM->getDimensions().rows;
+    int maxCols = returnM->getDimensions().columns;
 
-	while(i <= returnM->getDimensions().rows && j <= returnM->getDimensions().columns)
+	while(i <= maxRows && j <= maxCols)
 	{
 		//Step 1 - Guarantee that a_ij != 0
 		while(returnM->getEntry(i, j) == 0)
 		{
-			int row = 1;
+            // swap a row in s.t. (i, j) != 0 
+            for(row = i + 1; row < maxRows; row++)
+                if(returnM->getEntry(row, j) != 0)
+                    MatrixOperations::swapRow(*returnM, i, row); 
 
-			//find a row that does not start with 0
-			while(returnM->getEntry(row, j) != 0)
-			{
-				if(i > returnM->getDimensions().rows) //if on the last row, move to top of next column
-				{
-					j++;
-					row = 0;
-				}
-				else if(returnM->getEntry(row, j) != 0) //if a legit entry is found
-				{
-					i = row;
-					break;
-				}
-				else if(i > returnM->getDimensions().rows && j > returnM->getDimensions().columns) //if off the edge of the matrix
-					break;
-				row++; //move down the column
-			}
-			
-			//it's 0's the whole way down, so return the original array - technically in RREF
-			if(i > returnM->getDimensions().rows && j > returnM->getDimensions().columns)
-				return *returnM;	
+            if(row > maxRows)
+                j++;
 
-			MatrixOperations::swapRow(*returnM, i, row);
-		}	
+            // occurs if the whole matrix is 0's
+            if(i > maxRows || j > maxCols)
+                return *returnM;
+        }
 
 		//Step 2  - make the pivot entry = 1
-		double aijValue = m.getEntry(i, j);
-		aijValue = 1.0 / aijValue;
-		MatrixOperations::multiply(*returnM, 1.0 / aijValue);
+		double pivotReciprocal = 1.0 / (returnM->getEntry(i, j));
+        MatrixOperations::multiplyRow(returnM, pivotReciprocal, i); 
 
 		//Step 3 - eliminate all other non-zero entries in column j
 		for(int row = 1; row <= returnM->getDimensions().rows; row++)
@@ -346,7 +329,7 @@ Matrix& MatrixOperations::rref(const Matrix& m)
 			{
 				double leadingValue = returnM->getEntry(row, j); //find leading value to bring to 0
 				Matrix toSubtract = returnM->getRow(i); //get row i to subtract from next row
-				toSubtract = MatrixOperations::multiply(toSubtract, leadingValue); //multiply to enable nulling of leading value
+				MatrixOperations::multiply(toSubtract, leadingValue); //multiply to enable nulling of leading value
 				MatrixOperations::subtract(*returnM, row, toSubtract); //subtract scalar multiple
 			}	
 		}
@@ -360,6 +343,7 @@ Matrix& MatrixOperations::rref(const Matrix& m)
 	return *returnM;
 }        
 	
+
 
 // Matrix& MatrixOperations::findBasis(const Matrix& m)
 
