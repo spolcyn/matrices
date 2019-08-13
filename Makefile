@@ -19,7 +19,7 @@ $(TARGET): $(BUILDDIR)/main.o $(BUILDDIR)/Matrix.o $(BUILDDIR)/MatrixOperations.
 $(BUILDDIR)/main.o: $(SRCDIR)/main.cpp 
 	$(CC) $(CFLAGS) -c -o $@ $^ 
 
-$(BUILDDIR)/Matrix.o: $(SRCDIR)/Matrix.cpp
+$(BUILDDIR)/Matrix.o: $(SRCDIR)/Matrix.cpp $(SRCDIR)/MatrixOperations.hpp
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 $(BUILDDIR)/MatrixOperations.o: $(SRCDIR)/MatrixOperations.cpp

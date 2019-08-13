@@ -140,7 +140,7 @@ void MatrixOperations::multiply(Matrix &m, double scalar)
 			m.editEntry(row, column, m.getEntry(row, column) * scalar);
 }
 
-void multiplyRow(Matrix& m, double scalar, int row)
+void MatrixOperations::multiplyRow(Matrix& m, double scalar, int row)
 {
     for(int column = 1; column <= m.getDimensions().columns; column++)
         m.editEntry(row, column, m.getEntry(row, column) * scalar);
@@ -316,16 +316,12 @@ Matrix& MatrixOperations::rref(const Matrix& m)
 
 		//Step 2  - make the pivot entry = 1
 		double pivotReciprocal = 1.0 / (returnM->getEntry(i, j));
-        MatrixOperations::multiplyRow(returnM, pivotReciprocal, i); 
+        MatrixOperations::multiplyRow(*returnM, pivotReciprocal, i); 
 
 		//Step 3 - eliminate all other non-zero entries in column j
-		for(int row = 1; row <= returnM->getDimensions().rows; row++)
+		for(row = 1; row <= maxRows; row++)
 		{
-			if(row == i)
-			{
-				//do nothing and wait for increment
-			}
-			else
+			if(row != i)
 			{
 				double leadingValue = returnM->getEntry(row, j); //find leading value to bring to 0
 				Matrix toSubtract = returnM->getRow(i); //get row i to subtract from next row
@@ -338,7 +334,6 @@ Matrix& MatrixOperations::rref(const Matrix& m)
 		i++;
 		j++;
 	}
-
 
 	return *returnM;
 }        
