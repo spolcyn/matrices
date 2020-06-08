@@ -25,5 +25,7 @@ $(BUILDDIR)/Matrix.o: $(SRCDIR)/Matrix.cpp
 $(BUILDDIR)/MatrixOperations.o: $(SRCDIR)/MatrixOperations.cpp
 	$(CC) $(CFLAGS) -c -o $@ $<
 
+# TODO: Add docs target
+
 clean:
 	rm -f $(BUILDDIR)/*.o $(TARGET)
